@@ -1,0 +1,28 @@
+services:
+  dev:
+    image: mcr.microsoft.com/devcontainers/dotnet:1-8.0-bookworm
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity
+    ports:
+      - "3000:3000"  # frontend (Next.js)
+      - "5000:5000"  # backend F# (Giraffe/Saturn)
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://ruleflow:devpass@db:5432/ruleflow_dev
+
+  db:
+    image: postgres:15
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ruleflow
+      POSTGRES_PASSWORD: devpass
+      POSTGRES_DB: ruleflow_dev
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
